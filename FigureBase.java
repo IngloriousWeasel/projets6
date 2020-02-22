@@ -32,7 +32,6 @@ public class FigureBase {
 	private Map<Point, Set<Triangle>> triangleOfSommet = new HashMap<>();
 	// Liste des motifs du polygone
 	private Set<Motif> motifs = new HashSet<>();
-
 //==============================================================================//
 	// Constructeur.
 	public FigureBase(String mot, int cote, Point origine) {
@@ -45,8 +44,13 @@ public class FigureBase {
 
 //==============================================================================//
 	// Gettres.
+	
 	public String getMot() {
 		return mot;
+	}
+
+	public Map<Point, Set<Point>> getAdjacent() {
+		return adjacent;
 	}
 
 	public int getCote() {
@@ -72,9 +76,18 @@ public class FigureBase {
 	public Set<Losange> getLosanges() {
 		return losanges;
 	}
+	public Map<Point,Set<Triangle>> getTriangleOfSommet(){
+		return triangleOfSommet;
+	}
+	
+	
+	public Set<Motif> getMotifs() {
+		return motifs;
+	}
 //==============================================================================//
 	// Méthodes.
 //==============================================================================//
+
 
 	// Récupère les coordonnées en base 3 des points des sommets.
 	private List<Point> creerBordure() {
@@ -172,14 +185,12 @@ public class FigureBase {
 	// Initialisation pavage en triangles.
 	public void initTriangle() {
 		for (Point p1 : points) {
-			System.out.println("=============================================");
 			for (Point p2 : adjacent.get(p1)) {
-				System.out.println("--------");
 				for (Point p3 : adjacent.get(p2)) {
-					System.out.println("carlos");
 					if (adjacent.get(p1).contains(p3) && !p3.equals(p1)) {
 						Triangle triangle = new Triangle(p3, p2, p1);
 						triangles.add(triangle);
+						addMap(triangle);
 					}
 				}
 			}
@@ -191,25 +202,24 @@ public class FigureBase {
 	// Initialise les voisins des triangles.
 	public void initAdjacentTriangle() {
 		for (Triangle t : triangles) {
-			Set<Triangle> trianglePCommun = triangleOfSommet.get(t.getBottom());
+			Set<Triangle> trianglePCommun=
+					new HashSet(triangleOfSommet.get(t.getBottom()));
 			trianglePCommun.retainAll(triangleOfSommet.get(t.getTop()));
 			for (Triangle tTest : trianglePCommun) {
 				if (!tTest.equals(t))
 					t.addAdjacent(tTest);
 			}
-			trianglePCommun = triangleOfSommet.get(t.getBottom());
+			trianglePCommun=new HashSet(triangleOfSommet.get(t.getBottom()));
 			trianglePCommun.retainAll(triangleOfSommet.get(t.getMiddle()));
 			for (Triangle tTest : trianglePCommun) {
 				if (!tTest.equals(t))
-					;
-				t.addAdjacent(tTest);
+					t.addAdjacent(tTest);
 			}
-			trianglePCommun = triangleOfSommet.get(t.getMiddle());
+			trianglePCommun=new HashSet(triangleOfSommet.get(t.getBottom()));
 			trianglePCommun.retainAll(triangleOfSommet.get(t.getTop()));
 			for (Triangle tTest : trianglePCommun) {
 				if (!tTest.equals(t))
-					;
-				t.addAdjacent(tTest);
+					t.addAdjacent(tTest);
 			}
 		}
 	}
@@ -220,19 +230,17 @@ public class FigureBase {
 	// Initialise les losanges.
 	public void initLosanges() {
 		Losange l;
-		// Indice de fin de bouvle while.
-		for (Triangle t : triangles) {
-			if (!t.getInLosange()) {
-				for (Triangle t2 : t.getAdjacents()) {
+		for (Triangle t1 : triangles) {
+			if (!t1.getInLosange()) {
+				for (Triangle t2 : t1.getAdjacents()) {
 					if (!t2.getInLosange()) {
-						if (t.getType().equals(Type.GAUCHE)) {
-							l = new Losange(t, t2);
-						} else {
-							l = new Losange(t2, t);
-						}
-						t.setLosange(l);
+						if (t1.getType()==Type.GAUCHE)
+							l = new Losange(t1, t2);
+						else 
+							l = new Losange(t2, t1);
+						t1.setLosange(l);
 						t2.setLosange(l);
-						t.setInLosange(true);
+						t1.setInLosange(true);
 						t2.setInLosange(true);
 						losanges.add(l);
 						break;
@@ -242,64 +250,44 @@ public class FigureBase {
 		}
 	}
 
-////==============================================================================//
-//
-//	Initialise les voisins des triangles.
-//	/*public void initAdjacentlosange() {
-//		for (int i = 0; i < losanges.size(); i++) 
-//			for (int j = i + 1; j < losanges.size(); j++) 
-//				if (losanges.get(i).getTriangle1().getAdjacents().contains(losanges.get(j).getTriangle1()) 
-//						|| losanges.get(i).getTriangle1().getAdjacents().contains(losanges.get(j).getTriangle2())
-//						|| losanges.get(i).getTriangle2().getAdjacents().contains(losanges.get(j).getTriangle1()) 
-//						|| losanges.get(i).getTriangle2().getAdjacents().contains(losanges.get(j).getTriangle2()))
-//					losanges.get(i).addAdjacent(losanges.get(j));	
-//	}*/
+//============================================================================//
+//initialise les voisins des losange
+	public void initVoisinnageLosange() {
+		for( Losange l : this.losanges ) {
+			for ( Triangle t : l.getTriangleG().getAdjacents() ) 
+				if( !t.equals( l.getTriangleD() ) && t.getInLosange() )
+					l.addAdjacent( t.getLosange() );
+			for ( Triangle t : l.getTriangleD().getAdjacents() ) 
+				if( !t.equals( l.getTriangleG() ) && t.getInLosange() )
+					l.addAdjacent( t.getLosange() );	
+		}
+	}
+//============================================================================//	
 //	
-////==============================================================================//	
-//	
-//	// Initialise les motifs composants la figure.
-//	public void initMotif() {
-//		for(Losange l:this.losanges) {
-//			if(l.getCouleur().equals(Color.white)) {
-//				for(Losange l2:l.getAdjacents()) {
-//					if(l2.getCouleur().equals(Color.GRAY)) {
-//						for (Losange l3:l2.getAdjacents()) {
-//							if(l3.getCouleur().equals(Color.darkGray)&&l3.getAdjacents().contains(l))
-//								this.motifs.add(new Motif(l, l2, l3));
-//								
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
+//	Initialise les motifs composants la figure.
+	public void initMotif() {
+		for ( Losange lh : this.losanges)
+			if ( lh.getCouleur().equals(JFrameGraphics.horizontalColor) ) 
+				for ( Losange ld : lh.getAdjacents())
+					if(ld.getCouleur().equals(JFrameGraphics.rightColor))
+						for (Losange lg: ld.getAdjacents()) 
+							if(lg.getCouleur().equals(JFrameGraphics.leftColor)
+									&&lh.getAdjacents().contains(lg)) 
+									motifs.add(new Motif(lh,ld,lg));
+	}
+			
+	
+		
 //
-//	public Set<Motif> getMotifs() {
-//		return motifs;
-//	}
+
 //=======================================================================================================
-//determine le type d'un triangle:
-//	public boolean type1(Point a, Point b, Point c) {
-//		return (a.xValue()==b.xValue()&&c.xValue()<a.xValue())||(a.xValue()==c.xValue()&&b.xValue()<a.xValue())||(b.xValue()==c.xValue()&&a.xValue()<b.xValue());
-//	}
-//	public void updateVoisinsL(Losange l) {
-//		l.getAdjacents().removeAll(l.getAdjacents());
-//		for(Triangle t : l.getTriangle1().getAdjacents()) {
-//			if(!t.equals(l.getTriangle2())){
-//				l.addAdjacent(t.getLosange());			}
-//		}
-//		for(Triangle t : l.getTriangle2().getAdjacents()) {
-//			if(!t.equals(l.getTriangle1 ())){
-//				l.addAdjacent(t.getLosange());
-//				}
-//		}
-//		
-//	}
+
 //methode pour remplir la map qui a un point associe les trinagles dont il est le sommet
-	private void addMap(Triangle triangle) {
+	public void addMap(Triangle triangle) {
 		for (Point p : triangle.getSommets()) {
-			if (triangleOfSommet.containsKey(p))
+			if (triangleOfSommet.containsKey(p)) {
 				triangleOfSommet.get(p).add(triangle);
+			}
 			else {
 				Set<Triangle> nouveauSet = new HashSet();
 				nouveauSet.add(triangle);

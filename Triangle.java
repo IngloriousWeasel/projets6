@@ -29,6 +29,7 @@ public class Triangle {
 		this.sommets.add(p2);
 		this.sommets.add(p3);
 		initType(p1,p2,p3);
+		inLosange=false;
 		initPolygone();
 	}
 
@@ -94,14 +95,16 @@ public class Triangle {
 
 	// Redéfinition de equals.
 	@Override
-	public boolean equals(Object o) {
-		if (o == null) return false;
-		if (o instanceof Triangle && this == o) return true;
-		Triangle triangle = (Triangle)o;
-		if (sommets.size() != triangle.getSommets().size()) return false;
-		for (Point p: triangle.getSommets()) 
-			if (!sommets.contains(p)) return false;
-		return true;
+	public boolean equals(Object other) {
+	     if (other == null) return false;
+	     if (!(other instanceof Triangle)) return false;
+	     if (this == other) return true;
+	     Triangle triangle = (Triangle)other;
+	     return sommets.equals(triangle.getSommets());
+	}
+	@Override 
+	public int hashCode() {
+		return sommets.hashCode();
 	}
 		
 //==============================================================================//
@@ -116,49 +119,50 @@ public class Triangle {
 	}
 	
 //==============================================================================//
-//	
-//	// Récupère les points en commun de deux triangles.
-//	public List<Point> pointsCommun(Triangle t) {
-//		List<Point> pointsCommun = new ArrayList<Point>();
-//		for (int i = 0; i < sommets.size(); i++) {
-//			if (t.getSommets().contains(sommets.get(i)))
-//				pointsCommun.add(sommets.get(i));
-//		}
-//		return pointsCommun;
-//	}
+
 
 //==============================================================================//
 	
-//	// Récupère les points en commun de deux triangles.
-//	public Point pointsNonCommun(Triangle t) {
-//		for (int i = 0; i < sommets.size(); i++) {
-//			if (!t.getSommets().contains(sommets.get(i)))
-//				return sommets.get(i);
-//		}
-//		return null;
-//	}
 	public void initType(Point p1, Point p2, Point p3) {
 		int diff=p1.getY()-p2.getY();
-		if(diff==JFrameGraphics.dimCote) {
-			top=p1;
-			bottom=p2;
-			middle=p3;
-		}
-		else if(diff==-JFrameGraphics.dimCote) {
-			top=p2;
-			bottom=p1;
-			middle=p3;
-		}
-		else if(diff>0) {
-			middle=p1;
-			bottom=p2;
-			top=p3;
+		if ( diff>0 ) {
+			if( diff==JFrameGraphics.dimCote ) {
+				top=p2; 
+				middle=p3;
+				bottom=p1;
+			}
+			else if(p3.getY()<p1.getY()) {
+				top=p3; 
+				middle=p2;
+				bottom=p1;
+			}
+			else {
+				top=p2; 
+				middle=p1;
+				bottom=p3;
+			}
 		}
 		else {
-			middle=p2;
-			bottom=p1;
-			top=p3;
+			if( diff==-JFrameGraphics.dimCote ) {
+				top=p1; 
+				middle=p3;
+				bottom=p2;
+			}
+			else if ( p3.getY()<p1.getY()) {
+				top=p3; 
+				middle=p1;
+				bottom=p2;
+			}
+			else {
+				top=p1; 
+				middle=p2;
+				bottom=p3;
+			}
 		}
+		if(middle.getX()>top.getX())
+			type=Type.DROITE;
+		else
+			type=Type.GAUCHE;
 	}
 	
 	private void initPolygone(){
@@ -166,5 +170,6 @@ public class Triangle {
 		int[] yValues = {top.getY(),middle.getY(),bottom.getY()};
 		this.polygone=new Polygon(xValues, yValues, 3);
 	}
+
 	
 }

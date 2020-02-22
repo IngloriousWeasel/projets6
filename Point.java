@@ -13,7 +13,7 @@ public class Point {
 	private int w;
 	private int x;
 	private int y;
-	// Liste des points adjacents.
+	// enemble des points adjacents.
 	private Set<Point> adjacents = new HashSet<Point>();
 //==============================================================================//
 	
@@ -70,20 +70,12 @@ public class Point {
 		if (o == null) return false;
 		if (o instanceof Point && this == o) return true;
 		Point point = (Point)o;
-		if (x!= point.x) return false;
-		if (y!= point.y) return false;
-		return true;
+		return (x==point.getX()&&y==point.getY());
 	}
 	
 //==============================================================================//
-	
-//	// Ajoute un voisin.
-//	public void addAdjacent(Point p) {
-//		if (!adjacents.contains(p)) {
-//			adjacents.add(p);
-//			p.getAdjacents().add(this);
-//		}
-//	}
+	 
+
 	
 	
 	public Point newAddP(int u, int v, int w) {
@@ -96,11 +88,15 @@ public class Point {
 	}
 	//essayer trouver une meilleure distance 
 	public boolean isAdjacent(Point p) {
-		int dv=Math.abs(p.getV()-v);
-		int dw=Math.abs(p.getW()-w);
-		int manhattan=dv+dw;
-		int diff=Math.abs((v+w)-p.getV()-p.getW());
-		return (diff==1 && manhattan==1)||(diff==2&&manhattan==2);
+		double dx=Math.pow(x-p.getX(), 2);
+		double dy=Math.pow(y-p.getY(), 2);
+		int dist= (int)Math.sqrt(dx+dy);
+		return dist<=JFrameGraphics.dimCote&&!this.equals(p);
+//		int dv=Math.abs(p.getV()-v);
+//		int dw=Math.abs(p.getW()-w);
+//		int manhattan=dv+dw;
+//		int diff=Math.abs((v+w)-p.getV()-p.getW());
+//		return (diff==1 && manhattan==1)||(diff==2&&manhattan==2);
 	}
 
 	

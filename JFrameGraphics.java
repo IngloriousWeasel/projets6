@@ -8,9 +8,26 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class JFrameGraphics extends JPanel {
-
+	
+	//                    \      /
+	//                   v \    / w 
+	//                      \  /
+	//						 \/
+	//                       |
+	//						 |
+	//					   u |
+	//                       |
 	// Unitée de mesure.
 	public static int dimCote = 20;
+	
+	//couleur du losange horizontal
+	public static Color horizontalColor=Color.red;
+	
+	//couleur du losange a gauche;
+	public static Color leftColor = Color.GRAY;
+	
+	//couleur du losange a droite;
+	public static Color rightColor = Color.DARK_GRAY;
 	
 	private static final long serialVersionUID = 1L;
 	// Dimension de la fenêtre.
@@ -24,21 +41,29 @@ public class JFrameGraphics extends JPanel {
 		FigureBase F = new FigureBase(mot,dimCote, new Point(-6,14,0));
 		F.initPoints();
 		F.initAdjacentsPoint();
-		//g.drawPolygon(F.getPolygone());;
-		//F.initAdjacentsPoint();
 		F.initTriangle();
-		g.drawPolygon(F.getPolygone());
-		//F.initAdjacentTriangle();
-		//F.initLosanges();
-		//F.initAdjacentlosange();
-//		System.out.println(F.getTriangles().size());
-		g.setColor(Color.black);
-		for(Triangle t:F.getTriangles()) {
-			g.drawPolygon(t.getPolygone());
+		F.initAdjacentTriangle();
+		F.initLosanges();
+		F.initVoisinnageLosange();
+		F.initMotif();
+//		for(Motif m : F.getMotifs())
+//			m.surbrillance();
+		
+	//++++++++++++++++++++++++++++++++++ affichage
+		
+		for (Losange l : F.getLosanges()) {
+			g.setColor(l.getCouleur());
+			g.fillPolygon(l.getTriangleG().getPolygone());
+			g.fillPolygon(l.getTriangleD().getPolygone());
+			
+				
 		}
-//		for(Point p:F.getPoints()) {
+		
+//		for(Point p :F.getPoints())	
 //			g.drawLine(p.getX(),p.getY(),p.getX(),p.getY());
-//		}
+//			
+		
+		
 		
 		
 	}
