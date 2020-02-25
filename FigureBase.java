@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.HashMap;
 
@@ -32,7 +33,7 @@ public class FigureBase {
 	private Map<Point, Set<Triangle>> triangleOfSommet = new HashMap<>();
 	// Liste des motifs du polygone
 	private Set<Motif> motifs = new HashSet<>();
-//==============================================================================//
+//============================================================================//
 	// Constructeur.
 	public FigureBase(String mot, int cote, Point origine) {
 		super();
@@ -42,7 +43,7 @@ public class FigureBase {
 		initPolygone();
 	}
 
-//==============================================================================//
+//============================================================================//
 	// Gettres.
 	
 	public String getMot() {
@@ -84,9 +85,9 @@ public class FigureBase {
 	public Set<Motif> getMotifs() {
 		return motifs;
 	}
-//==============================================================================//
+//============================================================================//
 	// Méthodes.
-//==============================================================================//
+//============================================================================//
 
 
 	// Récupère les coordonnées en base 3 des points des sommets.
@@ -122,7 +123,7 @@ public class FigureBase {
 		return bordure;
 	}
 
-//==============================================================================//
+//============================================================================//
 
 	// Calcul des coordonnées des sommets en base 2.
 	private int[][] calculBordure() {
@@ -139,7 +140,7 @@ public class FigureBase {
 		}
 		return coords;
 	}
-//==============================================================================//
+//============================================================================//
 
 	// Initialise le polygone qui sera note scene.
 	private void initPolygone() {
@@ -147,7 +148,7 @@ public class FigureBase {
 		polygone = new Polygon(coords[0], coords[1], points.size());
 	}
 
-//==============================================================================//
+//============================================================================//
 
 	// Initialisise les points contenu dans la figure.
 	public void initPoints() {
@@ -167,7 +168,7 @@ public class FigureBase {
 				}
 		}
 	}
-//==============================================================================//
+//============================================================================//
 
 	// Initialise les voisins de chacun des points de la figure.
 	public void initAdjacentsPoint() {
@@ -181,7 +182,7 @@ public class FigureBase {
 		}
 	}
 
-//==============================================================================//
+//============================================================================//
 	// Initialisation pavage en triangles.
 	public void initTriangle() {
 		for (Point p1 : points) {
@@ -197,8 +198,7 @@ public class FigureBase {
 		}
 	}
 
-////==============================================================================//
-//	
+//============================================================================//	
 	// Initialise les voisins des triangles.
 	public void initAdjacentTriangle() {
 		for (Triangle t : triangles) {
@@ -224,9 +224,9 @@ public class FigureBase {
 		}
 	}
 
-//	
-////==============================================================================//
-//	
+	
+//============================================================================//
+	
 	// Initialise les losanges.
 	public void initLosanges() {
 		Losange l;
@@ -263,7 +263,7 @@ public class FigureBase {
 		}
 	}
 //============================================================================//	
-//	
+	
 //	Initialise les motifs composants la figure.
 	public void initMotif() {
 		for ( Losange lh : this.losanges)
@@ -275,12 +275,39 @@ public class FigureBase {
 									&&lh.getAdjacents().contains(lg)) 
 									motifs.add(new Motif(lh,ld,lg));
 	}
-			
 	
+// met a jour la liste d'est motifs apres le flip du motif M
+	public void updateMotifList ( Motif m ) {
+		for ( Losange lg : m.lHorizontal.getAdjacents() ) 
+			if ( lg.getCouleur().equals( JFrameGraphics.leftColor ) )
+				for(Losange ld :  lg.getAdjacents() ) 
+					if ( ld.getCouleur().equals( JFrameGraphics.rightColor ) 
+							&& m.lHorizontal.getAdjacents().contains(ld) ) 
+						motifs.add(new Motif(m.lHorizontal,lg,ld));
 		
-//
+		for ( Losange lh : m.lLeft.getAdjacents() )
+			if ( lh.getCouleur().equals( JFrameGraphics.horizontalColor ) )
+				for ( Losange ld : lh.getAdjacents() )
+					if ( ld.getCouleur().equals( JFrameGraphics.rightColor ) 
+							&& m.lLeft.getAdjacents().contains(ld) );
+		
+		for ( Losange lh : m.lRight.getAdjacents() )
+			if ( lh.getCouleur().equals( JFrameGraphics.horizontalColor ) )
+				for ( Losange lg : lh.getAdjacents() )
+					if ( lg.getCouleur().equals( JFrameGraphics.leftColor ) 
+							&& m.lRight.getAdjacents().contains(lg) );
+	}
+	
+//===========================================================================//
+	
+	//effectue un tirage pour effectuer un flip avec un probilité donnée
+	public boolean tirage(double proba) {
+		double val = Math.random();
+		return val<=proba;
+	}
+	
 
-//=======================================================================================================
+//============================================================================//
 
 //methode pour remplir la map qui a un point associe les trinagles dont il est le sommet
 	public void addMap(Triangle triangle) {

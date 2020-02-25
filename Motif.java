@@ -80,6 +80,9 @@ public class Motif {
 			this.down();
 		else 
 			this.up();
+			this.lHorizontal.updateVoisinnage();
+			this.lLeft.updateVoisinnage();
+			this.lRight.updateVoisinnage();
 	}
 	
 

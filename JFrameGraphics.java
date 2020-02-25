@@ -46,19 +46,23 @@ public class JFrameGraphics extends JPanel {
 		F.initLosanges();
 		F.initVoisinnageLosange();
 		F.initMotif();
-//		for(Motif m : F.getMotifs())
-//			m.surbrillance();
 		
-	//++++++++++++++++++++++++++++++++++ affichage
+//============================================================================// 
 		
 		for (Losange l : F.getLosanges()) {
 			g.setColor(l.getCouleur());
 			g.fillPolygon(l.getTriangleG().getPolygone());
 			g.fillPolygon(l.getTriangleD().getPolygone());
 			
+//		for(Motif m : F.getMotifs())
+//			m.surbrillance();
 				
 		}
 		
+		g.setColor(Color.black);
+		for (Triangle t : F.getTriangles() ) {
+			g.drawPolygon(t.getPolygone());
+		}
 //		for(Point p :F.getPoints())	
 //			g.drawLine(p.getX(),p.getY(),p.getX(),p.getY());
 //			
