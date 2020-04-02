@@ -1,9 +1,6 @@
 package projet;
-
-import java.awt.Color;
 import java.awt.Polygon;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -232,12 +229,17 @@ public class FigureBase {
 		Losange l;
 		for (Triangle t1 : triangles) {
 			if (!t1.getInLosange()) {
+				if(onTop(t1))
 				for (Triangle t2 : t1.getAdjacents()) {
-					if (!t2.getInLosange()) {
+					if (t2.getTop().equals(t1.getTop())
+							&&t2.getBottom().equals(t1.getBottom())
+							&&!t2.getInLosange()) {
+						
 						if (t1.getType()==Type.GAUCHE)
 							l = new Losange(t1, t2);
 						else 
 							l = new Losange(t2, t1);
+						
 						t1.setLosange(l);
 						t2.setLosange(l);
 						t1.setInLosange(true);
@@ -246,22 +248,66 @@ public class FigureBase {
 						break;
 					}
 				}
+				 if(onLeft(t1)) 
+					for (Triangle t2 : t1.getAdjacents()) {
+						if (t1.getType()==Type.GAUCHE)
+							if (t2.getMiddle().equals(t1.getTop())
+									&&t2.getBottom().equals(t1.getMiddle())
+									&&!t2.getInLosange()){ 
+									l = new Losange(t1, t2);
+									t1.setLosange(l);
+									t2.setLosange(l);
+									t1.setInLosange(true);
+									t2.setInLosange(true);
+									losanges.add(l);
+									break;
+							}
+						else 
+							if(t1.getTop().equals(t2.getTop())
+									&&t2.getMiddle().equals(t1.getBottom())
+									&&!t2.getInLosange()&&!onRight(t2)) {
+								l = new Losange(t2, t1);
+								t1.setLosange(l);
+								t2.setLosange(l);
+								t1.setInLosange(true);
+								t2.setInLosange(true);
+								losanges.add(l);
+								break;
+							}
+					}
+				else if(onRight(t1))
+					for (Triangle t2 : t1.getAdjacents()) {
+						if (t1.getType()==Type.DROITE)
+							if (t1.getTop().equals(t2.getBottom())
+									&&t1.getMiddle().equals(t2.getBottom()))
+									{ 
+									l = new Losange(t1, t2);
+									t1.setLosange(l);
+									t2.setLosange(l);
+									t1.setInLosange(true);
+									t2.setInLosange(true);
+									losanges.add(l);
+									break;
+							}
+						else 
+							if(t1.getTop().equals(t2.getMiddle())
+									&&t1.getMiddle().equals(t2.getBottom())
+									&&!t2.getInLosange()) {
+								l = new Losange(t2, t1);
+								t1.setLosange(l);
+								t2.setLosange(l);
+								t1.setInLosange(true);
+								t2.setInLosange(true);
+								losanges.add(l);
+								break;
+							}
+					}
+					
+				
 			}
 		}
-	}
-
-//============================================================================//
-//initialise les voisins des losange
-	public void initVoisinnageLosange() {
-		for( Losange l : this.losanges ) {
-			for ( Triangle t : l.getTriangleG().getAdjacents() ) 
-				if( !t.equals( l.getTriangleD() ) && t.getInLosange() )
-					l.addAdjacent( t.getLosange() );
-			for ( Triangle t : l.getTriangleD().getAdjacents() ) 
-				if( !t.equals( l.getTriangleG() ) && t.getInLosange() )
-					l.addAdjacent( t.getLosange() );	
-		}
-	}
+	}	
+	
 //============================================================================//	
 	
 //	Initialise les motifs composants la figure.
@@ -272,38 +318,144 @@ public class FigureBase {
 					if(ld.getCouleur().equals(JFrameGraphics.rightColor))
 						for (Losange lg: ld.getAdjacents()) 
 							if(lg.getCouleur().equals(JFrameGraphics.leftColor)
-									&&lh.getAdjacents().contains(lg)) 
-									motifs.add(new Motif(lh,ld,lg));
+									&&lh.getAdjacents().contains(lg)) {
+								Motif motif=new Motif(lh,lg,ld);
+								motif.getlHorizontal().getInMotifs().add(motif);
+								motif.getlLeft().getInMotifs().add(motif);
+								motif.getlRight().getInMotifs().add(motif);
+								motifs.add(motif);
+							}
 	}
 	
+	
+	
 // met a jour la liste d'est motifs apres le flip du motif M
-	public void updateMotifList ( Motif m ) {
-		for ( Losange lg : m.lHorizontal.getAdjacents() ) 
-			if ( lg.getCouleur().equals( JFrameGraphics.leftColor ) )
+	public void updateMotif ( Motif m ) {
+		for ( Losange lg : m.getlHorizontal().getAdjacents() ) 
+			if ( lg.getCouleur().equals( JFrameGraphics.leftColor ))
 				for(Losange ld :  lg.getAdjacents() ) 
 					if ( ld.getCouleur().equals( JFrameGraphics.rightColor ) 
-							&& m.lHorizontal.getAdjacents().contains(ld) ) 
-						motifs.add(new Motif(m.lHorizontal,lg,ld));
+							&& m.getlHorizontal().getAdjacents().contains(ld) ){ 
+							creerMotif(m.getlHorizontal(),lg,ld);
+					}
 		
-		for ( Losange lh : m.lLeft.getAdjacents() )
+		for ( Losange lh : m.getlLeft().getAdjacents() )
 			if ( lh.getCouleur().equals( JFrameGraphics.horizontalColor ) )
 				for ( Losange ld : lh.getAdjacents() )
 					if ( ld.getCouleur().equals( JFrameGraphics.rightColor ) 
-							&& m.lLeft.getAdjacents().contains(ld) );
+							&& m.getlLeft().getAdjacents().contains(ld) ) {
+							creerMotif(lh,m.getlLeft(),ld);
+					}
 		
-		for ( Losange lh : m.lRight.getAdjacents() )
+		
+		for ( Losange lh : m.getlRight().getAdjacents() )
 			if ( lh.getCouleur().equals( JFrameGraphics.horizontalColor ) )
 				for ( Losange lg : lh.getAdjacents() )
 					if ( lg.getCouleur().equals( JFrameGraphics.leftColor ) 
-							&& m.lRight.getAdjacents().contains(lg) );
+							&& m.getlRight().getAdjacents().contains(lg) )  
+							creerMotif(lh,lg,m.getlRight());
+	
+	}
+	
+	//suprime les motifs qui ont été cassé lors du flip
+	public void removeOldMotifs(Motif m) {
+		Set<Motif> tampon= new HashSet<>();
+		
+		for(Motif motif : m.getlHorizontal().getInMotifs()) {
+			if(!motif.equals(m)) {
+				this.motifs.remove(motif);
+				tampon.add(motif);
+			}
+		}
+		m.getlHorizontal().getInMotifs().removeAll(tampon);
+		
+		for(Motif motif : m.getlLeft().getInMotifs()) {
+			if(!motif.equals(m)) {
+				motifs.remove(motif);
+				tampon.add(motif);;
+			}
+		}
+		m.getlLeft().getInMotifs().removeAll(tampon);
+		
+		for(Motif motif : m.getlRight().getInMotifs()) {
+			if(!motif.equals(m)) {
+				motifs.remove(motif);
+				tampon.add(motif);
+			}
+		}
+		m.getlRight().getInMotifs().removeAll(tampon);
 	}
 	
 //===========================================================================//
 	
 	//effectue un tirage pour effectuer un flip avec un probilité donnée
-	public boolean tirage(double proba) {
+	public boolean pile_Ou_Face(double proba) {
 		double val = Math.random();
 		return val<=proba;
+	}
+	
+	//tire un point au hasard dans la liste:
+	public Point tiragePoint() {
+		Random rand = new Random();
+		int index=rand.nextInt(this.getPoints().size());
+		int i=0;
+		for ( Point p : points ) {
+			if( i == index )
+				return p;
+			i++;
+		}
+		return null;	
+	}
+	
+	public Motif tirageMotif() {
+		Random rand = new Random();
+		int index=rand.nextInt(motifs.size());
+		return peakMotif(index);
+	}
+	
+	
+	//regarde si il y a un motif qui contient le point p retourne null sinon
+	public Motif findMotif ( Point p ) {
+		for ( Motif m : motifs) 
+			if ( m.contains(p) )
+					return m;
+		return null;
+	}
+	
+	public Motif peakMotif(int index) {
+		int i=0;
+		for ( Motif m : motifs)
+			if ( i==index ) return m;
+			else i++;
+		return null;
+	}
+	
+	//tire un point au hasard si il est dans un motif effectue un flip avec une 
+	//proba donnée et retourne true retourne false si aucun flip n'est effectué
+	// auto genrated Jan Georg Smaus method 
+	public boolean compute ( double proba ) {
+		Point p =tiragePoint();
+		Motif m =findMotif(p);
+		if ( m!=null ) 
+			if(pile_Ou_Face(proba)) {
+				this.removeOldMotifs(m);
+				m.flip();
+				this.updateMotif(m);
+				return true;
+			}
+		return false;
+	}
+	
+	public boolean computeMotif ( double proba ) {
+		Motif m =tirageMotif();
+		if ( m!=null ) 
+			if(pile_Ou_Face(proba)) {
+				this.removeOldMotifs(m);
+				m.flip();
+				this.updateMotif(m);
+				return true;
+			}
+		return false;
 	}
 	
 
@@ -322,4 +474,27 @@ public class FigureBase {
 			}
 		}
 	}
+	
+	
+	public Motif creerMotif(Losange lh,Losange lg, Losange ld) {
+		Motif m =new Motif(lh, lg, ld);
+		lh.getInMotifs().add(m);
+		lg.getInMotifs().add(m);
+		ld.getInMotifs().add(m);
+		motifs.add(m);
+		return m;
+	}
+	
+	public boolean onTop(Triangle t) {
+		return t.getBottom().getV()>=0&&t.getBottom().getW()>=0;
+	}
+	public boolean onLeft(Triangle t){
+		return t.getMiddle().getX()<0&&!onTop(t);
+	}
+	public boolean onRight(Triangle t) {
+		return t.getMiddle().getX()>0&&!onTop(t);
+	}
+	
 }
+
+

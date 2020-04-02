@@ -1,33 +1,31 @@
 package projet;
 
 import java.awt.Color;
-import java.awt.Polygon;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+
 
 public class Motif {
 //============================================================================//
 	
 
 	//losange Horizontal <> : 
-	Losange lHorizontal;
+	private Losange lHorizontal;
 	
 	//losange a Gauche |\
 	//                  \|
-	Losange lLeft;
+	private Losange lLeft;
 	
 	//losange a Droite /|
 	//                |/
-	Losange lRight;
+	private Losange lRight;
 	
 	// Constructeur.
 	public Motif( Losange l1, Losange l2, Losange l3) {
 		lHorizontal=l1;
 		lLeft=l2;
 		lRight=l3;
+		
 	}
+	
 	
 //============================================================================//
 	// Getters.
@@ -52,9 +50,9 @@ public class Motif {
 		if ( o == null ) return false;
 		if ( o instanceof Motif && this == o ) return true;
 		Motif motif = ( Motif )o;
-		return this.lHorizontal.equals( motif.lHorizontal )&&
-				this.lLeft.equals( motif.lLeft )&&
-				this.lRight.equals( motif.lRight );
+		return this.lHorizontal.equals( motif.getlHorizontal() )&&
+				this.lLeft.equals( motif.getlLeft() )&&
+				this.lRight.equals( motif.getlRight() );
 	}
 	
 	@Override
@@ -73,44 +71,53 @@ public class Motif {
 	
 //============================================================================//
 	
-	//effectue un flip;
-	public void flip() {
-		if(this.lHorizontal.getTriangleD().getTop().getY()
-				>this.lLeft.getTriangleD().getTop().getY()) 
-			this.down();
-		else 
-			this.up();
-			this.lHorizontal.updateVoisinnage();
-			this.lLeft.updateVoisinnage();
-			this.lRight.updateVoisinnage();
+	public void flip(){
+		if (isUp()) {
+			down();
+		}
+		else {
+			up();
+		}
+	}
+	
+	private boolean isUp() {
+		return lHorizontal.getTriangleD().getTop().getY()<lLeft.getTriangleD().getTop().getY();
 	}
 	
 
 	//effectue un flip vers le bas "retire un cube"
 	private void down() {
-		Triangle tempon1=lHorizontal.getTriangleG();
-		Triangle tempon2=lRight.getTriangleG();
-		lHorizontal.setTriangleG( lLeft.getTriangleG() );
-		lRight.setTriangleG( tempon1 );
-		lLeft.setTriangleG( tempon2 );
-		tempon1=getlHorizontal().getTriangleD();
-		lHorizontal.setTriangleD( lRight.getTriangleD() );
-		lRight.setTriangleD( lLeft.getTriangleD() );
-		lLeft.setTriangleD( tempon1 );
+
+		Triangle hg = lHorizontal.getTriangleG();
+		Triangle hd = lHorizontal.getTriangleD();
+		Triangle gg = lLeft.getTriangleG();
+		Triangle gd = lLeft.getTriangleD();
+		Triangle dg = lRight.getTriangleG();
+		Triangle dd = lRight.getTriangleD();
+		lHorizontal.setTriangles(gg,dd);
+		lRight.setTriangles(hg, gd);
+		lLeft.setTriangles(dg, hd);
 	}
-	
-	
-	//effectue un flip vers le haut "ajoute un cube"
 	private void up() {
-		Triangle tempon1=lHorizontal.getTriangleG();
-		lHorizontal.setTriangleG(lRight.getTriangleG());
-		lRight.setTriangleG(lLeft.getTriangleG());
-		lLeft.setTriangleG(tempon1);
-		tempon1=lHorizontal.getTriangleD();
-		lHorizontal.setTriangleD(lLeft.getTriangleD());
-		lLeft.setTriangleD(lRight.getTriangleD());
-		lRight.setTriangleD(tempon1);
+
+		Triangle hg = lHorizontal.getTriangleG();
+		Triangle hd = lHorizontal.getTriangleD();
+		Triangle gg = lLeft.getTriangleG();
+		Triangle gd = lLeft.getTriangleD();
+		Triangle dg = lRight.getTriangleG();
+		Triangle dd = lRight.getTriangleD();
+		lHorizontal.setTriangles(dg,gd);
+		lLeft.setTriangles(hg,dd );
+		lRight.setTriangles(gg, hd);
 	}
+	
+	
+	public boolean contains ( Point p ) {
+		return lHorizontal.contains(p) 
+				||lLeft.contains(p)
+				||lRight.contains(p);
+	}
+	
 	
 
 }

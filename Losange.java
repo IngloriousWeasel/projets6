@@ -1,11 +1,7 @@
 package projet;
 
 import java.awt.Color;
-import java.awt.Polygon;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Losange {
@@ -16,9 +12,9 @@ public class Losange {
 	
 	// Couleur utilisé pour l'affichage.
 	private Color couleur;
-	
-	// Liste des losanges adjacents.
-	private Set<Losange> adjacents = new HashSet<Losange>();
+	 
+	//Liste des motifs auxquels le losange appartient 
+	private Set<Motif> inMotifs = new HashSet<>();
 	
 	
 	
@@ -32,9 +28,7 @@ public class Losange {
 		this.triangleD=td;
 		tg.setInLosange(true);
 		td.setInLosange(true);
-		//updateSommetsLosange();
 		actualiseCouleur();
-		//this.updatePolygon();
 	}
 	
 	// Initialisation de la couleur.
@@ -57,12 +51,27 @@ public class Losange {
 		return triangleD;
 	}
 
+
 	public Color getCouleur() {
 		return couleur;
 	}
 
 	public Set<Losange> getAdjacents() {
+		Set<Losange> adjacents= new HashSet<>();
+		for ( Triangle t : triangleD.getAdjacents()) {
+			if ( !t.equals( triangleG ))
+				adjacents.add(t.getLosange());
+		}
+		for ( Triangle t : triangleG.getAdjacents()) {
+			if ( !t.equals( triangleD ))
+				adjacents.add(t.getLosange());
+		}
+		adjacents.remove(null);
 		return adjacents;
+	}
+	
+	public Set<Motif> getInMotifs() {
+		return inMotifs;
 	}
 	//setter
 	public void setCouleur(Color couleur) {
@@ -78,6 +87,13 @@ public class Losange {
 	public void setTriangleD(Triangle triangleD) {
 		this.triangleD = triangleD;
 	}
+	
+	public void setTriangles(Triangle g, Triangle d) {
+		setTriangleG(g);
+		setTriangleD(d);
+		g.setLosange(this);
+		d.setLosange(this);
+	}
 
 //================================================================================//
 	// Redéfinition de equals() et hashCode()
@@ -86,8 +102,8 @@ public class Losange {
 		if ( o == null ) return false;
 		if ( o instanceof Losange && this == o ) return true;
 		Losange losange = ( Losange )o;
-		return this.triangleD.equals( losange.triangleD )&&
-				this.triangleG.equals( losange.triangleG );
+		return this.triangleD.equals( losange.getTriangleD() )&&
+				this.triangleG.equals( losange.getTriangleG() );
 	}
 	
 	@Override
@@ -96,32 +112,10 @@ public class Losange {
 	}
 	
 //==============================================================================//
-	// Ajoute un voisin.
-	public void addAdjacent(Losange l) {
-		if (!adjacents.contains(l)) {
-			adjacents.add(l);
-			if (!l.adjacents.contains(this))
-				l.getAdjacents().add(this);
-		}
-	}
 	
-	public void removeAdjacent( Losange l) {
-		l.getAdjacents().remove( l );
-		this.getAdjacents().remove( l );
-	}
+
 	
-	public void updateVoisinnage() {
-		for( Losange l:this.getAdjacents() ) 
-			removeAdjacent( l );
-		
-		for ( Triangle t:triangleG.getAdjacents() ) 
-			if( !t.equals(this.getTriangleD() ) && t.getInLosange() )
-				this.addAdjacent( t.getLosange() );
-		
-		for ( Triangle t:triangleD.getAdjacents() ) 
-			if( !t.equals( this.getTriangleG() ) && t.getInLosange() ) 
-				this.addAdjacent( t.getLosange() );	
-				
-		
+	public boolean contains ( Point p) {
+		return triangleD.contains(p) || triangleG.contains(p);
 	}
 }

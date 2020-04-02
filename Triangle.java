@@ -1,10 +1,8 @@
 package projet;
 
-import java.awt.Color;
+
 import java.awt.Polygon;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Triangle {
@@ -167,6 +165,10 @@ public class Triangle {
 		int[] xValues = {top.getX(),middle.getX(),bottom.getX()};
 		int[] yValues = {top.getY(),middle.getY(),bottom.getY()};
 		this.polygone=new Polygon(xValues, yValues, 3);
+	}
+	
+	public boolean contains(Point p) {
+		return this.polygone.contains(p.getX(), p.getY());
 	}
 
 	
