@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.HashMap;
 
 public class FigureBase {
@@ -23,7 +24,7 @@ public class FigureBase {
 	// ensemble de point
 	private Set<Point> points = new HashSet<>();
 	// ensemble des trangles (polygône à 3 côtés) qui pave la figure.
-	private Set<Triangle> triangles = new HashSet<>();
+	private Set<Triangle> triangles = new TreeSet<>();
 	// Liste des losanges composants le polygone.
 	private Set<Losange> losanges = new HashSet<>();
 	// map de pour la création des voisins
@@ -225,7 +226,7 @@ public class FigureBase {
 //============================================================================//
 	
 	// Initialise les losanges.
-	public void initLosanges() {
+	public void initLosangesCube() {
 		Losange l;
 		for (Triangle t1 : triangles) {
 			if (!t1.getInLosange()) {
@@ -306,7 +307,83 @@ public class FigureBase {
 				
 			}
 		}
-	}	
+	}
+	
+	public void initLosangesplan() {
+		Losange l;
+		for (Triangle t1: this.getTriangles()) {
+			if (!t1.getInLosange())
+				for (Triangle t2 : t1.getAdjacents()){
+					if (!t2.getInLosange()) {
+						if(t1.getTop().equals(t2.getTop())
+								&&t1.getBottom().equals(t2.getBottom())) {
+							l = new Losange(t1, t2);
+							t1.setLosange(l);
+							t2.setLosange(l);
+							t1.setInLosange(true);
+							t2.setInLosange(true);
+							losanges.add(l);
+							for (Triangle t3 : t2.getAdjacents()) {
+								if(!t3.getInLosange()&&
+										t2.getMiddle().equals(t3.getTop())
+										&&t2.getBottom().equals(t3.getMiddle())) {
+									for (Triangle t4 : t3.getAdjacents()) {
+										if(!t4.getInLosange()
+												&&t3.getBottom().equals(t4.getMiddle())
+												&&t3.getMiddle().equals(t4.getTop())) {
+											Losange l3 = new Losange(t3,t4);
+											t2.setLosange(l3);
+											t3.setLosange(l3);
+											t2.setInLosange(true);
+											t3.setInLosange(true);
+											losanges.add(l3);
+									}
+								}
+							}		
+						}
+					}
+					
+						else if(t1.getMiddle().equals(t2.getTop())
+								&&t1.getBottom().equals(t2.getMiddle())) {
+							for (Triangle t3 : t2.getAdjacents()) {
+								if(!t3.getInLosange()
+										&&t2.getBottom().equals(t3.getMiddle())
+										&&t2.getMiddle().equals(t3.getTop())) {
+									Losange l2 = new Losange(t3,t2);
+									t2.setLosange(l2);
+									t3.setLosange(l2);
+									t2.setInLosange(true);
+									t3.setInLosange(true);
+									losanges.add(l2);
+									
+								}
+							}
+						}
+					}
+				}
+		}
+	}
+	
+	public void initLosangesrand() {
+		Losange l;
+		for (Triangle t1 : this.triangles) {
+			if(!t1.getInLosange()) {
+				for (Triangle t2 : t1.getAdjacents())
+					if(!t2.getInLosange()) {
+						l = new Losange(t1, t2);
+						t1.setLosange(l);
+						t2.setLosange(l);
+						t1.setInLosange(true);
+						t2.setInLosange(true);
+						losanges.add(l);
+						
+					}
+			}
+		}
+	}
+	
+	
+			
 	
 //============================================================================//	
 	

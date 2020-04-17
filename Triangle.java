@@ -5,7 +5,7 @@ import java.awt.Polygon;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Triangle {
+public class Triangle implements Comparable<Triangle> {
 	private Point middle,bottom, top ;
 	
 	private Type type;
@@ -104,6 +104,21 @@ public class Triangle {
 	public int hashCode() {
 		return sommets.hashCode();
 	}
+	
+	@Override
+	public int compareTo(Triangle t) {
+		if (this.getTop().getY()==t.getTop().getY()) {
+			if (this.getTop().getX()==t.getTop().getX()) {
+				if (this.getMiddle().getX()==t.getMiddle().getX()) {
+					return 0;
+				}
+				return this.getMiddle().getX()-t.getMiddle().getX();
+			}
+				return this.getTop().getX()-t.getTop().getX();
+		}
+		return this.getTop().getY()-t.getTop().getY();
+		
+	}
 		
 //==============================================================================//
 	
@@ -170,6 +185,7 @@ public class Triangle {
 	public boolean contains(Point p) {
 		return this.polygone.contains(p.getX(), p.getY());
 	}
+
 
 	
 }

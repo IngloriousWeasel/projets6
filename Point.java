@@ -17,8 +17,9 @@ public class Point {
 //==============================================================================//
 	
 	// Constructeur.
-	public Point(int u, int v, int w) {
-		this.u = 0;
+	
+	public Point(int x, int y) {
+		this.u = u;
 		this.v = v-u;
 		this.w = w-u;
 		this.x=(int)(0.5 * Math.sqrt(3) * (w-v) * JFrameGraphics.dimCote);
@@ -26,7 +27,7 @@ public class Point {
 	}
 	
 	public Point(Point p) {
-		this(p.getU(), p.getV(),p.getW());
+		this(0, p.getV(),p.getW());
 	}
 	
 //==============================================================================//
@@ -78,12 +79,12 @@ public class Point {
 	
 	
 	public Point newAddP(int u, int v, int w) {
-		return new Point(this.u + u,this.v + v, this.w + w);
+		return new Point(u,this.v + v, this.w + w);
 	}
 	
 	@Override
 	public int hashCode() {
-		return 31*u+17*v+w;
+		return 17*v+w;
 	}
 	//essayer trouver une meilleure distance 
 	public boolean isAdjacent(Point p) {
@@ -96,6 +97,10 @@ public class Point {
 //		int manhattan=dv+dw;
 //		int diff=Math.abs((v+w)-p.getV()-p.getW());
 //		return (diff==1 && manhattan==1)||(diff==2&&manhattan==2);
+	}
+	
+	public int hauteur() {
+		return Math.abs(v+w+u);
 	}
 
 	

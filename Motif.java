@@ -73,9 +73,11 @@ public class Motif {
 	
 	public void flip(){
 		if (isUp()) {
+			
 			down();
 		}
 		else {
+			
 			up();
 		}
 	}

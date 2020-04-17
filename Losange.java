@@ -22,12 +22,18 @@ public class Losange {
 	
 	
 	// Constructeur.
-	public Losange(Triangle tg, Triangle td) {
+	public Losange(Triangle t1, Triangle t2) {
 		super();
-		this.triangleG=tg;
-		this.triangleD=td;
-		tg.setInLosange(true);
-		td.setInLosange(true);
+		if (t1.getType().equals(Type.GAUCHE)) {
+			this.triangleG=t1;
+			this.triangleD=t2;
+		}
+		else {
+			this.triangleG=t2;
+			this.triangleD=t1;
+		}
+		t1.setInLosange(true);
+		t2.setInLosange(true);
 		actualiseCouleur();
 	}
 	
