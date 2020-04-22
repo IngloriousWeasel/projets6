@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Losange {
+public class Losange implements Comparable<Losange>{
 	//2 triangles du losange.
 	private Triangle triangleG;
 	
@@ -123,5 +123,11 @@ public class Losange {
 	
 	public boolean contains ( Point p) {
 		return triangleD.contains(p) || triangleG.contains(p);
+	}
+
+	@Override
+	public int compareTo(Losange o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

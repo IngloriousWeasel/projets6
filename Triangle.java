@@ -116,7 +116,7 @@ public class Triangle implements Comparable<Triangle> {
 			}
 				return this.getTop().getX()-t.getTop().getX();
 		}
-		return this.getTop().getY()-t.getTop().getY();
+		return t.getTop().getY()-this.getTop().getY();
 		
 	}
 		

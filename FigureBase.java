@@ -10,7 +10,7 @@ import java.util.TreeSet;
 import java.util.HashMap;
 
 public class FigureBase {
-
+	private float moyHPlan=0.f;
 	// Mot représentant la figure.
 	private String mot;
 	// Taille de référence.
@@ -22,7 +22,7 @@ public class FigureBase {
 	// map des points adjacents
 	private Map<Point, Set<Point>> adjacent = new HashMap<>();
 	// ensemble de point
-	private Set<Point> points = new HashSet<>();
+	private Set<Point> points = new TreeSet<>();
 	// ensemble des trangles (polygône à 3 côtés) qui pave la figure.
 	private Set<Triangle> triangles = new TreeSet<>();
 	// Liste des losanges composants le polygone.
@@ -98,17 +98,23 @@ public class FigureBase {
 		for (char c : mot.toCharArray()) {
 			switch (c) {
 			case 'u':
-				pointact = pointact.newAddP(k, 0, 0);
+				pointact = pointact.newAddP( 0, k, k);
+				if ( bordure.contains(pointact))
+					System.out.println( true);
 				bordure.add(pointact);
 				k = 1;
 				break;
 			case 'v':
 				pointact = pointact.newAddP(0, k, 0);
+				if ( bordure.contains(pointact))
+					System.out.println( true);
 				bordure.add(pointact);
 				k = 1;
 				break;
 			case 'w':
 				pointact = pointact.newAddP(0, 0, k);
+				if ( bordure.contains(pointact))
+					System.out.println( true);
 				bordure.add(pointact);
 				k = 1;
 				break;
@@ -116,6 +122,7 @@ public class FigureBase {
 				k = -1;
 				break;
 			}
+			
 
 		}
 		return bordure;
@@ -150,22 +157,18 @@ public class FigureBase {
 
 	// Initialisise les points contenu dans la figure.
 	public void initPoints() {
-		int minU = points.stream().mapToInt(Point::getU).min().getAsInt();
-		int maxU = points.stream().mapToInt(Point::getU).max().getAsInt();
 		int minV = points.stream().mapToInt(Point::getV).min().getAsInt();
 		int maxV = points.stream().mapToInt(Point::getV).max().getAsInt();
 		int minW = points.stream().mapToInt(Point::getW).min().getAsInt();
 		int maxW = points.stream().mapToInt(Point::getW).max().getAsInt();
-		for (int u = minU; u <= maxU; u++) {
-			for (int v = minV; v <= maxV; v++)
-				for (int w = minW; w <= maxW; w++) {
-					Point p = new Point(u, v, w);
-					if (polygone.contains(p.getX(), p.getY()))
-						points.add(p);
-
-				}
-		}
+		for (int v = minV; v <= maxV; v++)
+			for (int w = minW; w <= maxW; w++) {
+				Point p = new Point(v, w);
+				if (polygone.contains(p.getX(), p.getY()))
+					points.add(p);
+			}
 	}
+	
 //============================================================================//
 
 	// Initialise les voisins de chacun des points de la figure.
@@ -325,16 +328,16 @@ public class FigureBase {
 							losanges.add(l);
 							for (Triangle t3 : t2.getAdjacents()) {
 								if(!t3.getInLosange()&&
-										t2.getMiddle().equals(t3.getTop())
-										&&t2.getBottom().equals(t3.getMiddle())) {
+										t2.getMiddle().equals(t3.getBottom())
+										&&t2.getTop().equals(t3.getMiddle())) {
 									for (Triangle t4 : t3.getAdjacents()) {
 										if(!t4.getInLosange()
-												&&t3.getBottom().equals(t4.getMiddle())
-												&&t3.getMiddle().equals(t4.getTop())) {
+												&&t3.getTop().equals(t4.getMiddle())
+												&&t3.getMiddle().equals(t4.getBottom())) {
 											Losange l3 = new Losange(t3,t4);
-											t2.setLosange(l3);
+											t4.setLosange(l3);
 											t3.setLosange(l3);
-											t2.setInLosange(true);
+											t4.setInLosange(true);
 											t3.setInLosange(true);
 											losanges.add(l3);
 									}
@@ -343,12 +346,12 @@ public class FigureBase {
 						}
 					}
 					
-						else if(t1.getMiddle().equals(t2.getTop())
-								&&t1.getBottom().equals(t2.getMiddle())) {
+						else if(t1.getMiddle().equals(t2.getBottom())
+								&&t1.getTop().equals(t2.getMiddle())) {
 							for (Triangle t3 : t2.getAdjacents()) {
 								if(!t3.getInLosange()
-										&&t2.getBottom().equals(t3.getMiddle())
-										&&t2.getMiddle().equals(t3.getTop())) {
+										&&t2.getTop().equals(t3.getMiddle())
+										&&t2.getMiddle().equals(t3.getBottom())) {
 									Losange l2 = new Losange(t3,t2);
 									t2.setLosange(l2);
 									t3.setLosange(l2);
@@ -402,6 +405,26 @@ public class FigureBase {
 								motif.getlRight().getInMotifs().add(motif);
 								motifs.add(motif);
 							}
+	}
+	
+//============================================================================//
+//	//Initialise la hauteur des points de la figure.
+	public void initHauteurPlan() {
+		for ( Motif m : this.motifs) {
+			m.getlHorizontal().getTriangleD().getTop().setHauteur(-1);
+			m.getlHorizontal().getTriangleD().getMiddle().setHauteur(0);
+			m.getlHorizontal().getTriangleG().getMiddle().setHauteur(0);
+			m.getlHorizontal().getTriangleD().getBottom().setHauteur(1);
+			m.getlRight().getTriangleD().getTop().setHauteur(1);
+			m.getlRight().getTriangleG().getTop().setHauteur(0);
+			m.getlLeft().getTriangleG().getTop().setHauteur(1);
+		}
+		float sum = 0.f;
+		for(Point p : this.points) {
+			sum+= p.getHauteur();
+		}
+		moyHPlan=sum/this.points.size();
+		
 	}
 	
 	
@@ -469,6 +492,14 @@ public class FigureBase {
 	public boolean pile_Ou_Face(double proba) {
 		double val = Math.random();
 		return val<=proba;
+	}
+	
+// fonction de calcul de proba :1-(exp(-E/T)/2)
+//E est 	un nombre dans {0,1,2,3,4,5,6} qui est égal au nombre de défaut  identique collé à un losange du même type)
+//T est la température
+	
+	public double proba(double E , float T) {
+		return 1-(Math.exp(E/T))/2;
 	}
 	
 	//tire un point au hasard dans la liste:
@@ -570,6 +601,14 @@ public class FigureBase {
 	}
 	public boolean onRight(Triangle t) {
 		return t.getMiddle().getX()>0&&!onTop(t);
+	}
+	
+	public float moyHauteurs() {
+		float sum=-0.f;
+		for ( Point p : this.points)  
+			sum += p.getHauteur();
+		return (sum/this.points.size())-moyHPlan;
+		
 	}
 	
 }

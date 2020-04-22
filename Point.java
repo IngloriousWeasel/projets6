@@ -4,10 +4,10 @@ package projet;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Point {
+public class Point implements Comparable<Point> {
 
 	// Coordonnées du point dans la base des 3 vecteurs.
-	private int u;
+	private int hauteur;
 	private int v;
 	private int w;
 	private int x;
@@ -18,23 +18,23 @@ public class Point {
 	
 	// Constructeur.
 	
-	public Point(int x, int y) {
-		this.u = u;
-		this.v = v-u;
-		this.w = w-u;
+	public Point( int v, int w) {
+
+		this.v = v;
+		this.w = w;
 		this.x=(int)(0.5 * Math.sqrt(3) * (w-v) * JFrameGraphics.dimCote);
-		this.y=(int)((u - 0.5 * (v + w)) * JFrameGraphics.dimCote);
+		this.y=(int)((- 0.5 * (v + w)) * JFrameGraphics.dimCote);
 	}
 	
 	public Point(Point p) {
-		this(0, p.getV(),p.getW());
+		this(p.getV(),p.getW());
 	}
 	
 //==============================================================================//
 	
 	// Getters.
-	public int getU() {
-		return u;
+	public int getHauteur() {
+		return hauteur;
 	}
 	
 	public int getV() {
@@ -58,7 +58,11 @@ public class Point {
 	}
 //==============================================================================//
 	
-	// Méthodes
+	// setter
+	public void setHauteur(int hauteur) {
+		this.hauteur = hauteur;
+	}
+	
 	
 //==============================================================================//
 
@@ -74,12 +78,9 @@ public class Point {
 	}
 	
 //==============================================================================//
-	 
 
-	
-	
 	public Point newAddP(int u, int v, int w) {
-		return new Point(u,this.v + v, this.w + w);
+		return new Point(this.v + v, this.w + w);
 	}
 	
 	@Override
@@ -99,9 +100,21 @@ public class Point {
 //		return (diff==1 && manhattan==1)||(diff==2&&manhattan==2);
 	}
 	
-	public int hauteur() {
-		return Math.abs(v+w+u);
+	public void deltaDown() {
+		hauteur=hauteur-3;
 	}
+	
+	public void deltaUp(){
+		hauteur = hauteur +3;
+	}
+
+	@Override
+	public int compareTo(Point p) {
+		if ( this.y == p.getY() ) 
+			return this.x-p.getX();
+		return p.getY()-this.y;	
+	}
+	
 
 	
 }

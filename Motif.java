@@ -18,6 +18,8 @@ public class Motif {
 	//                |/
 	private Losange lRight;
 	
+	private double E=0.d;
+	
 	// Constructeur.
 	public Motif( Losange l1, Losange l2, Losange l3) {
 		lHorizontal=l1;
@@ -39,6 +41,10 @@ public class Motif {
 
 	public Losange getlRight() {
 		return lRight;
+	}
+	
+	public double getE() {
+		return E;
 	}
 	
 //============================================================================//
@@ -80,8 +86,11 @@ public class Motif {
 			
 			up();
 		}
+		updateE();
 	}
 	
+
+
 	private boolean isUp() {
 		return lHorizontal.getTriangleD().getTop().getY()<lLeft.getTriangleD().getTop().getY();
 	}
@@ -99,6 +108,7 @@ public class Motif {
 		lHorizontal.setTriangles(gg,dd);
 		lRight.setTriangles(hg, gd);
 		lLeft.setTriangles(dg, hd);
+		lHorizontal.getTriangleD().getTop().deltaDown();
 	}
 	private void up() {
 
@@ -111,6 +121,7 @@ public class Motif {
 		lHorizontal.setTriangles(dg,gd);
 		lLeft.setTriangles(hg,dd );
 		lRight.setTriangles(gg, hd);
+		lHorizontal.getTriangleD().getBottom().deltaUp();
 	}
 	
 	
@@ -120,6 +131,21 @@ public class Motif {
 				||lRight.contains(p);
 	}
 	
-	
+	public void updateE() {
+		double e=0.d;
+		for (Losange l : lHorizontal.getAdjacents()) 
+			if (l.getCouleur().equals(JFrameGraphics.horizontalColor))
+				e++;
+		for (Losange l : lLeft.getAdjacents()) 
+			if (l.getCouleur().equals(JFrameGraphics.leftColor))
+				e++;
+		for (Losange l : lRight.getAdjacents()) 
+			if (l.getCouleur().equals(JFrameGraphics.rightColor))
+				e++;
+		this.E=e;
+		
+		
+		
+	}
 
 }
