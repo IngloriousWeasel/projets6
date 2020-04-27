@@ -18,7 +18,7 @@ public class Motif {
 	//                |/
 	private Losange lRight;
 	
-	private double E=0.d;
+
 	
 	// Constructeur.
 	public Motif( Losange l1, Losange l2, Losange l3) {
@@ -43,10 +43,7 @@ public class Motif {
 		return lRight;
 	}
 	
-	public double getE() {
-		return E;
-	}
-	
+
 //============================================================================//
 	
 	//Redéfinition de equals et hashCode
@@ -86,7 +83,6 @@ public class Motif {
 			
 			up();
 		}
-		updateE();
 	}
 	
 
@@ -126,24 +122,116 @@ public class Motif {
 	
 	
 	public boolean contains ( Point p ) {
-		return lHorizontal.contains(p) 
-				||lLeft.contains(p)
-				||lRight.contains(p);
+		if(isUp()) {
+			return p.equals(this.lHorizontal.getTriangleD().getBottom());
+		}
+		else {
+			return p.equals(this.lHorizontal.getTriangleD().getTop());
+		}
 	}
 	
-	public void updateE() {
+	public double getDeltaE() {
 		double e=0.d;
 		for (Losange l : lHorizontal.getAdjacents()) 
-			if (l.getCouleur().equals(JFrameGraphics.horizontalColor))
+			if (l.getCouleur().equals(Main.horizontalColor))
 				e++;
 		for (Losange l : lLeft.getAdjacents()) 
-			if (l.getCouleur().equals(JFrameGraphics.leftColor))
+			if (l.getCouleur().equals(Main.leftColor))
 				e++;
 		for (Losange l : lRight.getAdjacents()) 
-			if (l.getCouleur().equals(JFrameGraphics.rightColor))
+			if (l.getCouleur().equals(Main.rightColor))
 				e++;
-		this.E=e;
-		
+		if (this.isUp()) {
+			double eDown=0;
+			
+			for (Triangle t : lHorizontal.getTriangleG().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.rightColor) ) {
+					eDown++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lLeft.getTriangleD().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.rightColor) ) {
+					eDown++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lHorizontal.getTriangleD().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.leftColor) ) {
+					eDown++;
+					break;
+				}
+			}
+			for (Triangle t : lRight.getTriangleG().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.leftColor) ) {
+					eDown++;
+					break;
+				}
+			}
+			for (Triangle t : lLeft.getTriangleG().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.horizontalColor) ) {
+					eDown++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lRight.getTriangleD().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.horizontalColor) ) {
+					eDown++;
+					break;
+				}
+			}
+			return e-eDown;
+		}
+		else {
+			double eUp=0.d;
+			for (Triangle t : lHorizontal.getTriangleG().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.leftColor) ) {
+					eUp++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lHorizontal.getTriangleD().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.rightColor) ) {
+					eUp++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lLeft.getTriangleG().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.rightColor) ) {
+					eUp++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lLeft.getTriangleD().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.horizontalColor) ) {
+					eUp++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lRight.getTriangleG().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.horizontalColor) ) {
+					eUp++;
+					break;
+				}
+			}
+			
+			for (Triangle t : lRight.getTriangleD().getAdjacents()) {
+				if ( t.getLosange().getCouleur().equals(Main.leftColor) ) {
+					eUp++;
+					break;
+				}
+			}
+			
+			return e-eUp;
+			
+		}
 		
 		
 	}

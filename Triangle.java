@@ -137,7 +137,7 @@ public class Triangle implements Comparable<Triangle> {
 	public void initType(Point p1, Point p2, Point p3) {
 		int diff=p1.getY()-p2.getY();
 		if ( diff>0 ) {
-			if( diff==JFrameGraphics.dimCote ) {
+			if( diff==Main.dimCote ) {
 				top=p2; 
 				middle=p3;
 				bottom=p1;
@@ -154,7 +154,7 @@ public class Triangle implements Comparable<Triangle> {
 			}
 		}
 		else {
-			if( diff==-JFrameGraphics.dimCote ) {
+			if( diff==-Main.dimCote ) {
 				top=p1; 
 				middle=p3;
 				bottom=p2;

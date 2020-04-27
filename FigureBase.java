@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 import java.util.HashMap;
 
 public class FigureBase {
@@ -34,16 +37,29 @@ public class FigureBase {
 //============================================================================//
 	// Constructeur.
 	public FigureBase(String mot, int cote, Point origine) {
-		super();
 		this.mot = mot;
 		this.cote = cote;
 		this.origine = origine;
 		initPolygone();
 	}
-
+	
+	public FigureBase(FigureBase F) {
+		this(F.getMot(), F.getCote(),F.getOrigine());
+		this.moyHPlan=F.getMoyHPlan();
+		this.copiePoints(F);
+		this.initAdjacentsPoint();
+		this.initTriangle();
+		this.initAdjacentTriangle();
+		this.copiePavage(F);
+		this.initMotif();
+	}
 //============================================================================//
 	// Gettres.
 	
+	public float getMoyHPlan() {
+		return moyHPlan;
+	}
+
 	public String getMot() {
 		return mot;
 	}
@@ -370,6 +386,7 @@ public class FigureBase {
 	public void initLosangesrand() {
 		Losange l;
 		for (Triangle t1 : this.triangles) {
+			System.out.println("carlos");
 			if(!t1.getInLosange()) {
 				for (Triangle t2 : t1.getAdjacents())
 					if(!t2.getInLosange()) {
@@ -386,18 +403,53 @@ public class FigureBase {
 	}
 	
 	
-			
+	public void copiePavage ( FigureBase F){
+		for ( Losange l : F.getLosanges() ) {
+			for ( Triangle t : this.triangles) {
+				if ( l.getTriangleG().equals(t)) {
+					for (Triangle tad : t.getAdjacents()) {
+						if ( tad.equals(l.getTriangleD())) {
+							l = new Losange(t, tad);
+							t.setLosange(l);
+							tad.setLosange(l);
+							t.setInLosange(true);
+							tad.setInLosange(true);
+							losanges.add(l);
+							break;
+						}
+					}
+					break;
+				}
+				else if (l.getTriangleG().equals(t)) {
+					for (Triangle tad : t.getAdjacents()) {
+						if ( tad.equals(l.getTriangleG())) {
+							l = new Losange(t, tad);
+							t.setLosange(l);
+							tad.setLosange(l);
+							t.setInLosange(true);
+							tad.setInLosange(true);
+							losanges.add(l);
+							break;
+						}
+					}
+					break;
+				}
+					
+				}
+			}
+		}
+	
 	
 //============================================================================//	
 	
 //	Initialise les motifs composants la figure.
 	public void initMotif() {
 		for ( Losange lh : this.losanges)
-			if ( lh.getCouleur().equals(JFrameGraphics.horizontalColor) ) 
+			if ( lh.getCouleur().equals(Main.horizontalColor) ) 
 				for ( Losange ld : lh.getAdjacents())
-					if(ld.getCouleur().equals(JFrameGraphics.rightColor))
+					if(ld.getCouleur().equals(Main.rightColor))
 						for (Losange lg: ld.getAdjacents()) 
-							if(lg.getCouleur().equals(JFrameGraphics.leftColor)
+							if(lg.getCouleur().equals(Main.leftColor)
 									&&lh.getAdjacents().contains(lg)) {
 								Motif motif=new Motif(lh,lg,ld);
 								motif.getlHorizontal().getInMotifs().add(motif);
@@ -427,31 +479,38 @@ public class FigureBase {
 		
 	}
 	
+	public void copiePoints(FigureBase F) {
+		this.points.clear();
+		for (Point p : F.points) {
+			this.points.add(p.clone());
+		}
+	}
+	
 	
 	
 // met a jour la liste d'est motifs apres le flip du motif M
 	public void updateMotif ( Motif m ) {
 		for ( Losange lg : m.getlHorizontal().getAdjacents() ) 
-			if ( lg.getCouleur().equals( JFrameGraphics.leftColor ))
+			if ( lg.getCouleur().equals( Main.leftColor ))
 				for(Losange ld :  lg.getAdjacents() ) 
-					if ( ld.getCouleur().equals( JFrameGraphics.rightColor ) 
+					if ( ld.getCouleur().equals( Main.rightColor ) 
 							&& m.getlHorizontal().getAdjacents().contains(ld) ){ 
 							creerMotif(m.getlHorizontal(),lg,ld);
 					}
 		
 		for ( Losange lh : m.getlLeft().getAdjacents() )
-			if ( lh.getCouleur().equals( JFrameGraphics.horizontalColor ) )
+			if ( lh.getCouleur().equals( Main.horizontalColor ) )
 				for ( Losange ld : lh.getAdjacents() )
-					if ( ld.getCouleur().equals( JFrameGraphics.rightColor ) 
+					if ( ld.getCouleur().equals( Main.rightColor ) 
 							&& m.getlLeft().getAdjacents().contains(ld) ) {
 							creerMotif(lh,m.getlLeft(),ld);
 					}
 		
 		
 		for ( Losange lh : m.getlRight().getAdjacents() )
-			if ( lh.getCouleur().equals( JFrameGraphics.horizontalColor ) )
+			if ( lh.getCouleur().equals( Main.horizontalColor ) )
 				for ( Losange lg : lh.getAdjacents() )
-					if ( lg.getCouleur().equals( JFrameGraphics.leftColor ) 
+					if ( lg.getCouleur().equals( Main.leftColor ) 
 							&& m.getlRight().getAdjacents().contains(lg) )  
 							creerMotif(lh,lg,m.getlRight());
 	
@@ -498,7 +557,7 @@ public class FigureBase {
 //E est 	un nombre dans {0,1,2,3,4,5,6} qui est égal au nombre de défaut  identique collé à un losange du même type)
 //T est la température
 	
-	public double proba(double E , float T) {
+	public double proba(double E , double T) {
 		return 1-(Math.exp(E/T))/2;
 	}
 	
@@ -541,7 +600,7 @@ public class FigureBase {
 	//tire un point au hasard si il est dans un motif effectue un flip avec une 
 	//proba donnée et retourne true retourne false si aucun flip n'est effectué
 	// auto genrated Jan Georg Smaus method 
-	public boolean compute ( double proba ) {
+	public boolean melange ( double proba ) {
 		Point p =tiragePoint();
 		Motif m =findMotif(p);
 		if ( m!=null ) 
@@ -553,6 +612,30 @@ public class FigureBase {
 			}
 		return false;
 	}
+	public boolean compute (Double T) {
+		Point p =tiragePoint();
+		Motif m =findMotif(p);
+		if ( m!=null ) {
+			if(pile_Ou_Face(0.5d)) {
+				if(m.getDeltaE()<=0) {
+					this.removeOldMotifs(m);
+					m.flip();
+					this.updateMotif(m);
+					return true;
+				}
+				else if (pile_Ou_Face(Math.exp(-m.getDeltaE()/T))) {
+					this.removeOldMotifs(m);
+					m.flip();
+					this.updateMotif(m);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+		
+	
+	
 	
 	public boolean computeMotif ( double proba ) {
 		Motif m =tirageMotif();

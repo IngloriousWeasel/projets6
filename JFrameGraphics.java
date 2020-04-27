@@ -16,53 +16,29 @@ public class JFrameGraphics extends JPanel {
 	//					   u |
 	//                       |
 	// Unitée de mesure.
-	public static int dimCote =10;
 	
-	//couleur du losange horizontal
-	public static Color horizontalColor=Color.red;
-	
-	//couleur du losange a gauche;
-	public static Color leftColor = Color.GRAY;
-	
-	//couleur du losange a droite;
-	public static Color rightColor = Color.DARK_GRAY;
-	
-	private static final long serialVersionUID = 1L;
-	// Dimension de la fenêtre.
-	private static int[] dim = {1080,1080};
-	
-	public void pait(Graphics g) {
+	public void paint(Graphics g) {
+		super.paintComponent(g);
 		// Précondition le mot doit fermer le polygone.
-		
-		String mot ="-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw"
-				+ "-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw-vw"
-				+ "-vwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwuwu"
-				+ "wuwuwuwuwuwuwuwuwuwuwuv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv"
-				+ "-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-wv-w"
-				+"v-wv-wv-wv-wv-wv-wv-wv-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-"
-				+ "u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-"
-				+ "u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w-u-w";
 		g.translate(10,900);
-		FigureBase F = new FigureBase(mot,dimCote, new Point(0,0));
-		long debut = System.currentTimeMillis();
-		F.initPoints();
-		F.initAdjacentsPoint();
-		F.initTriangle();
-		F.initAdjacentTriangle();
-		F.initLosangesplan();
-		F.initMotif();
-		F.initHauteurPlan();
+//		F.initPoints();
+//		F.initAdjacentsPoint();
+//		F.initTriangle();
+//		F.initAdjacentTriangle();
+//		F.initLosangesplan();
+//		F.initMotif();
+//		F.initHauteurPlan();
 //		g.drawPolygon(F.getPolygone());
 //		
 //		
-		System.out.println(System.currentTimeMillis()-debut);
-		int i=0;
-		while ( i <100000) {
-			F.computeMotif(1);
-			i++;
-			}
-		System.out.println(F.peakMotif(10).getE());
-		System.out.println(F.moyHauteurs());
+//		int i=0;
+//		while ( i <100000) {
+//			Main.getF().computeMotif(1);
+//			i++;
+//			}
+//		System.out.println(Main.getF().peakMotif(10).getE());
+		
+		g.drawString("hauteur initiale : "+ Math.abs(Main.getF().moyHauteurs()),1500,-800);
 //		for ( Point p : F.getPoints())
 //			System.out.println(p.getHauteur());
 		
@@ -71,7 +47,7 @@ public class JFrameGraphics extends JPanel {
 ////		
 		
 	//	remplissage des losanges
-		for (Losange l : F.getLosanges()) 
+		for (Losange l : Main.getF().getLosanges()) 
 				afficheLosange(l,g);
 		
 //		System.out.println("done");
@@ -117,17 +93,5 @@ public class JFrameGraphics extends JPanel {
 		afficheLosange(m.getlRight(), g);
 	}
 	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		JFrame frame = new JFrame("Projet");
-		frame.getContentPane().add(new JFrameGraphics());
-	    frame.setSize(dim[0],dim[1]);
-	    frame.setLocationRelativeTo(null);
-	    frame.setVisible(true);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-	    frame.setResizable(true);
-
-	}
 
 }

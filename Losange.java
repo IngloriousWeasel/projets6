@@ -41,11 +41,11 @@ public class Losange implements Comparable<Losange>{
 	public void actualiseCouleur() {
 		
 		if (triangleG.getTop().getY() > triangleD.getTop().getY())
-			couleur = JFrameGraphics.leftColor;
+			couleur = Main.leftColor;
 		else if (triangleG.getTop().getY()==triangleD.getTop().getY())
-			couleur = JFrameGraphics.horizontalColor;
+			couleur = Main.horizontalColor;
 		else 
-			couleur = JFrameGraphics.rightColor;
+			couleur = Main.rightColor;
 	}
 //===============================================================================//
 

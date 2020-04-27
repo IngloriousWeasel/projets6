@@ -22,8 +22,8 @@ public class Point implements Comparable<Point> {
 
 		this.v = v;
 		this.w = w;
-		this.x=(int)(0.5 * Math.sqrt(3) * (w-v) * JFrameGraphics.dimCote);
-		this.y=(int)((- 0.5 * (v + w)) * JFrameGraphics.dimCote);
+		this.x=(int)(0.5 * Math.sqrt(3) * (w-v) * Main.dimCote);
+		this.y=(int)((- 0.5 * (v + w)) * Main.dimCote);
 	}
 	
 	public Point(Point p) {
@@ -92,7 +92,7 @@ public class Point implements Comparable<Point> {
 		double dx=Math.pow(x-p.getX(), 2);
 		double dy=Math.pow(y-p.getY(), 2);
 		int dist= (int)Math.sqrt(dx+dy);
-		return dist<=JFrameGraphics.dimCote&&!this.equals(p);
+		return dist<=Main.dimCote&&!this.equals(p);
 //		int dv=Math.abs(p.getV()-v);
 //		int dw=Math.abs(p.getW()-w);
 //		int manhattan=dv+dw;
@@ -114,6 +114,14 @@ public class Point implements Comparable<Point> {
 			return this.x-p.getX();
 		return p.getY()-this.y;	
 	}
+	
+	@Override
+	public Point clone() {
+		Point p = new Point(this.v,this.w);
+		p.hauteur=this.hauteur;
+		return p;
+	}
+	
 	
 
 	
